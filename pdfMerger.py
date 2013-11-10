@@ -7,20 +7,24 @@ from PySide.QtGui import QMainWindow, QPushButton, QApplication, QLabel, QAction
 from PySide.QtCore import QDir, QModelIndex, Qt, SIGNAL, SLOT
 
 def merge_pdf(destination=None, pdf_files=None):
-    # Add pages to write
-    output = PdfFileWriter()
-    output_stream = open(destination, 'wb')
+	try:
+		# Add pages to write
+		output = PdfFileWriter()
+		output_stream = open(destination, 'wb')
+		for f in pdf_files:    
+			input_file = PdfFileReader(open(f, "rb"))
+			pages = input_file.getNumPages()
 
-    for f in pdf_files:    
-        input_file = PdfFileReader(open(f, "rb"))
-        pages = input_file.getNumPages()
-        
-        for pages in range(pages):
-            output.addPage(input_file.getPage(pages))
+		for pages in range(pages):
+			output.addPage(input_file.getPage(pages))
 
-    # Write output
-    output.write(output_stream)
-    output_stream.close()
+		# Write output
+		output.write(output_stream)
+		output_stream.close()
+		QMessageBox.information(main, 'Success!', 'PDFs have been merged to ' + destination )
+	except:
+		# TODO include traceback
+		QMessageBox.critical(main, 'Error!', 'Critical error occured.')
 
 class MainWindow(QMainWindow):
 	def __init__(self):
@@ -100,7 +104,7 @@ class MainWindow(QMainWindow):
 
 	def show_about(self):
 		#TODO add hyperlinks and create simple base website
-		QMessageBox.information( self, 'About', 'PDF Merger\n2013 Nikola Peric\n\n'
+		QMessageBox.about(self, 'About', 'PDF Merger\n2013 Nikola Peric\n\n'
 			+ 'http://www.example.com/\nhttps://github.com/nikolap/pdfmerger/\n\n'
 			+ 'Licensed under The MIT License\nhttp://opensource.org/licenses/MIT' )
 
