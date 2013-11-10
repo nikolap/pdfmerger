@@ -1,33 +1,26 @@
 # 2013 Nikola Peric
-
 import sys
 import re
 
 from PyPDF2 import PdfFileWriter, PdfFileReader
-from PySide.QtGui import QMainWindow, QPushButton, QApplication, QLabel, QAction, QWidget, QListWidget, QLineEdit, QFileSystemModel, QTreeView, QListView, QGroupBox, QGridLayout, QSplitter, QHBoxLayout, QVBoxLayout, QDesktopServices, QMessageBox, QFileDialog
+from PySide.QtGui import QMainWindow, QPushButton, QApplication, QLabel, QAction, QWidget, QListWidget, QLineEdit, QFileSystemModel, QTreeView, QListView, QGroupBox, QGridLayout, QSplitter, QHBoxLayout, QVBoxLayout, QDesktopServices, QMessageBox, QFileDialog, QAbstractItemView
 from PySide.QtCore import QDir, QModelIndex, Qt, SIGNAL, SLOT
 
-def merge_pdf(destination=None, pdfFiles=None):    
-    if destination is None:
-    	pass
-
-    if pdfFiles < 2:
-    	pass
-
+def merge_pdf(destination=None, pdf_files=None):
     # Add pages to write
     output = PdfFileWriter()
-    outputStream = open(destination, 'wb')
+    output_stream = open(destination, 'wb')
 
-    for f in pdfFiles:    
-        inputF = PdfFileReader(open(f, "rb"))
-        numPages = inputF.getNumPages()
+    for f in pdf_files:    
+        input_file = PdfFileReader(open(f, "rb"))
+        pages = input_file.getNumPages()
         
-        for pageNum in range(numPages):
-            output.addPage(inputF.getPage(pageNum))
+        for pages in range(pages):
+            output.addPage(input_file.getPage(pages))
 
     # Write output
-    output.write(outputStream)
-    outputStream.close()
+    output.write(output_stream)
+    output_stream.close()
 
 class MainWindow(QMainWindow):
 	def __init__(self):
@@ -55,6 +48,7 @@ class MainWindow(QMainWindow):
 
 		input_files_label = QLabel("Input PDFs")
 		self.files_list = QListWidget()
+		self.files_list.setSelectionMode(QAbstractItemView.ContiguousSelection)
 		add_button = QPushButton("Add PDF(s) to merge...")
 		add_button.clicked.connect(self.clicked_add)
 		up_button = QPushButton("Up")
@@ -130,8 +124,11 @@ class MainWindow(QMainWindow):
 		self.dest_path_edit.setText(fname)
 
 	def merge_pdf(self):
-		#TODO include pdf files when complete
-		merge_pdf(destination=self.dest_path_edit.text(), pdfFiles=None)
+		# TODO error checking
+		input_files = []
+		for i in range(0, self.files_list.count()):
+			input_files.insert(self.files_list.item(i).text())
+		merge_pdf(destination=self.dest_path_edit.text(), pdf_files=input_files)
 
 app = QApplication(sys.argv)
 main = MainWindow()
