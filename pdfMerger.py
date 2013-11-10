@@ -55,6 +55,8 @@ class MainWindow(QMainWindow):
 		up_button.clicked.connect(self.move_file_up)
 		down_button = QPushButton("Down")
 		down_button.clicked.connect(self.move_file_down)
+		remove_button = QPushButton("Remove PDF")
+		remove_button.clicked.connect(self.remove_file)
 		select_path_label = QLabel("Output PDF")
 		self.dest_path_edit = QLineEdit()
 		select_path = QPushButton("Select...")
@@ -65,6 +67,7 @@ class MainWindow(QMainWindow):
 		up_down_vbox = QVBoxLayout(self.up_down_widget)
 		up_down_vbox.addWidget(up_button)
 		up_down_vbox.addWidget(down_button)
+		up_down_vbox.addWidget(remove_button)
 		self.up_down_widget.setLayout(up_down_vbox)
 
 		group_input = QGroupBox()
@@ -117,7 +120,12 @@ class MainWindow(QMainWindow):
 			if (self.files_list.row(item) != self.files_list.count() - 1):
 				row = self.files_list.row(item)
 				self.files_list.takeItem(row)
-				self.files_list.insertItem(row + 1, item)	
+				self.files_list.insertItem(row + 1, item)
+
+	def remove_file(self):
+		for item in self.files_list.selectedItems():
+			row = self.files_list.row(item)
+			self.files_list.takeItem(row)
 
 	def select_save_path(self):
 		fname, _ = QFileDialog.getSaveFileName(self, 'Save file', QDir.homePath(), "*.pdf")
@@ -127,7 +135,7 @@ class MainWindow(QMainWindow):
 		# TODO error checking
 		input_files = []
 		for i in range(0, self.files_list.count()):
-			input_files.insert(self.files_list.item(i).text())
+			input_files.append(self.files_list.item(i).text())
 		merge_pdf(destination=self.dest_path_edit.text(), pdf_files=input_files)
 
 app = QApplication(sys.argv)
