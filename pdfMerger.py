@@ -1,6 +1,7 @@
 # 2013 Nikola Peric
 import sys
 import re
+import traceback
 
 from PyPDF2 import PdfFileWriter, PdfFileReader
 from PySide.QtGui import QMainWindow, QPushButton, QApplication, QLabel, QAction, QWidget, QListWidget, QLineEdit, QFileSystemModel, QTreeView, QListView, QGroupBox, QGridLayout, QSplitter, QHBoxLayout, QVBoxLayout, QDesktopServices, QMessageBox, QFileDialog, QAbstractItemView
@@ -24,8 +25,7 @@ def merge_pdf(destination=None, pdf_files=None):
 		output_stream.close()
 		QMessageBox.information(main, 'Success!', 'PDFs have been merged to ' + destination )
 	except:
-		# TODO include traceback
-		QMessageBox.critical(main, 'Error!', 'Critical error occured.')
+		QMessageBox.critical(main, 'Error!', 'Critical error occured.\n\n%s' % traceback.format_exc())
 
 class MainWindow(QMainWindow):
 	def __init__(self):
@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
 
 		input_files_label = QLabel("Input PDFs")
 		self.files_list = QListWidget()
-		self.files_list.setSelectionMode(QAbstractItemView.ContiguousSelection)
+		self.files_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
 		add_button = QPushButton("Add PDF(s) to merge...")
 		add_button.clicked.connect(self.clicked_add)
 		up_button = QPushButton("Up")
@@ -114,20 +114,26 @@ class MainWindow(QMainWindow):
 		self.files_list.addItems(fname)
 
 	def move_file_up(self):
-		# TODO fix bulk moving
-		for item in self.files_list.selectedItems():
-			if (self.files_list.row(item) != 0):
-				row = self.files_list.row(item)
-				self.files_list.takeItem(row)
-				self.files_list.insertItem(row - 1, item)		
+		sorted_selected_items = self.get_sorted_selected_items()
+		if 0 not in sorted_selected_items:
+			for row in sorted_selected_items:
+				item = self.files_list.takeItem(row)
+				self.files_list.insertItem(row - 1, item)	
 
 	def move_file_down(self):
-		# TODO fix bulk moving
-		for item in self.files_list.selectedItems():
-			if (self.files_list.row(item) != self.files_list.count() - 1):
-				row = self.files_list.row(item)
-				self.files_list.takeItem(row)
+		sorted_selected_items = self.get_sorted_selected_items(descending=True)
+		if (self.files_list.count() - 1) not in sorted_selected_items:
+			for row in sorted_selected_items:
+				item = self.files_list.takeItem(row)
 				self.files_list.insertItem(row + 1, item)
+
+	def get_sorted_selected_items(self, descending=False):
+		items_list = []
+
+		for item in self.files_list.selectedItems():
+			items_list.append(self.files_list.row(item))
+
+		return sorted(items_list, key=int, reverse = descending)
 
 	def remove_file(self):
 		for item in self.files_list.selectedItems():
