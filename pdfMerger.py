@@ -57,7 +57,7 @@ class MainWindow(QMainWindow):
 		select_path = QPushButton("Select...")
 		select_path.clicked.connect(self.select_save_path)
 		start = QPushButton("Start")
-		start,clicked.connect(merge_pdf(destination=dest_path_edit.text(), pdfFiles=None) #TODO include pdf files when complete
+		start.clicked.connect(self.merge_pdf)
 
 		self.fileBrowserWidget = QWidget(self)
 
@@ -138,6 +138,10 @@ class MainWindow(QMainWindow):
 	def select_save_path(self):
 		fname, _ = QFileDialog.getSaveFileName(self, 'Save file', QDir.homePath(), "*.pdf")
 		self.dest_path_edit.setText(fname)
+
+	def merge_pdf(self):
+		#TODO include pdf files when complete
+		merge_pdf(destination=self.dest_path_edit.text(), pdfFiles=None)
 
 app = QApplication(sys.argv)
 main = MainWindow()
