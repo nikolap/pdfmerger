@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
 		self.options_widget = QWidget(self)
 		
 
-		input_files_label = QLabel("Input PDFs")
+		input_files_label = QLabel("Input PDFs.\nThis is the order in which the files will be merged too")
 		self.files_list = QListWidget()
 		self.files_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
 		add_button = QPushButton("Add PDF(s) to merge...")
