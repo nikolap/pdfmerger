@@ -7,6 +7,7 @@ from PySide.QtGui import QMainWindow, QPushButton, QApplication, QLabel, QAction
 from PySide.QtCore import QDir, QModelIndex, Qt, SIGNAL, SLOT
 
 def merge_pdf(destination=None, pdf_files=None):
+	# TODO fix merging function causing error for some larger PDF files
 	try:
 		# Add pages to write
 		output = PdfFileWriter()
@@ -113,6 +114,7 @@ class MainWindow(QMainWindow):
 		self.files_list.addItems(fname)
 
 	def move_file_up(self):
+		# TODO fix bulk moving
 		for item in self.files_list.selectedItems():
 			if (self.files_list.row(item) != 0):
 				row = self.files_list.row(item)
@@ -120,6 +122,7 @@ class MainWindow(QMainWindow):
 				self.files_list.insertItem(row - 1, item)		
 
 	def move_file_down(self):
+		# TODO fix bulk moving
 		for item in self.files_list.selectedItems():
 			if (self.files_list.row(item) != self.files_list.count() - 1):
 				row = self.files_list.row(item)
