@@ -54,11 +54,13 @@ class MainWindow(QMainWindow):
 		
 
 		input_files_label = QLabel("Input PDFs")
-		files_list = QListWidget()
+		self.files_list = QListWidget()
 		add_button = QPushButton("Add PDF(s) to merge...")
 		add_button.clicked.connect(self.clicked_add)
 		up_button = QPushButton("Up")
+		up_button.clicked.connect(self.move_file_up)
 		down_button = QPushButton("Down")
+		down_button.clicked.connect(self.move_file_down)
 		select_path_label = QLabel("Output PDF")
 		self.dest_path_edit = QLineEdit()
 		select_path = QPushButton("Select...")
@@ -75,7 +77,7 @@ class MainWindow(QMainWindow):
 		grid_input = QGridLayout()
 		grid_input.addWidget(add_button, 0, 0)
 		grid_input.addWidget(input_files_label, 1, 0)
-		grid_input.addWidget(files_list, 2, 0)
+		grid_input.addWidget(self.files_list, 2, 0)
 		grid_input.addWidget(self.up_down_widget, 2, 1)
 		group_input.setLayout(grid_input)
 
@@ -107,6 +109,21 @@ class MainWindow(QMainWindow):
 
 	def clicked_add(self):
 		fname, _ = QFileDialog.getOpenFileNames(self, 'Select two or more PDFs to merge', QDir.homePath(), "*.pdf")
+		self.files_list.addItems(fname)
+
+	def move_file_up(self):
+		for item in self.files_list.selectedItems():
+			if (self.files_list.row(item) != 0):
+				row = self.files_list.row(item)
+				self.files_list.takeItem(row)
+				self.files_list.insertItem(row - 1, item)		
+
+	def move_file_down(self):
+		for item in self.files_list.selectedItems():
+			if (self.files_list.row(item) != self.files_list.count() - 1):
+				row = self.files_list.row(item)
+				self.files_list.takeItem(row)
+				self.files_list.insertItem(row + 1, item)	
 
 	def select_save_path(self):
 		fname, _ = QFileDialog.getSaveFileName(self, 'Save file', QDir.homePath(), "*.pdf")
