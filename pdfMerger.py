@@ -4,7 +4,7 @@ import sys
 import re
 
 from PyPDF2 import PdfFileWriter, PdfFileReader
-from PySide.QtGui import QMainWindow, QPushButton, QApplication, QLabel, QAction, QWidget, QListWidget, QLineEdit, QFileSystemModel, QTreeView, QListView, QGroupBox, QGridLayout, QSplitter, QHBoxLayout, QVBoxLayout, QDesktopServices
+from PySide.QtGui import QMainWindow, QPushButton, QApplication, QLabel, QAction, QWidget, QListWidget, QLineEdit, QFileSystemModel, QTreeView, QListView, QGroupBox, QGridLayout, QSplitter, QHBoxLayout, QVBoxLayout, QDesktopServices, QMessageBox, QFileDialog
 from PySide.QtCore import QDir, QModelIndex, Qt, SIGNAL, SLOT
 
 def merge_pdf(destination=None, pdfFiles=None):    
@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
 		self.setWindowTitle('PDF Merger')
 
 		about = QAction('About', self)
-		# TODO open about dialog
+		self.connect(about, SIGNAL('clicked()'), self.show_about)
 		exit = QAction('Exit', self)
 		exit.setShortcut('Ctrl+Q')
 		self.connect(exit, SIGNAL('triggered()'), SLOT('close()'))
@@ -50,11 +50,14 @@ class MainWindow(QMainWindow):
 
 		files_list = QListWidget()
 		input_files_label = QLabel("Input PDFs")
-		add_button = QPushButton("Add files")
+		add_button = QPushButton("Add file")
+		add_button.clicked.connect(self.clicked_add)
 		select_path_label = QLabel("Output PDF")
-		dest_path_edit = QLineEdit()
+		self.dest_path_edit = QLineEdit()
 		select_path = QPushButton("Select...")
+		select_path.clicked.connect(self.select_save_path)
 		start = QPushButton("Start")
+		start,clicked.connect(merge_pdf(destination=dest_path_edit.text(), pdfFiles=None) #TODO include pdf files when complete
 
 		self.fileBrowserWidget = QWidget(self)
 
@@ -63,7 +66,7 @@ class MainWindow(QMainWindow):
 
 		self.folder_view = QTreeView(parent = self)
 		self.folder_view.setModel(self.dirmodel)
-		self.folder_view.clicked[QModelIndex].connect(self.clickedFolder)
+		self.folder_view.clicked[QModelIndex].connect(self.clicked_folder)
 		self.folder_view.setHeaderHidden(True)
 		self.folder_view.hideColumn(1)
 		self.folder_view.hideColumn(2)
@@ -93,7 +96,7 @@ class MainWindow(QMainWindow):
 		self.fileBrowserWidget.setLayout(hbox)
 
 		grid_input.addWidget(select_path_label, 0, 0)
-		grid_input.addWidget(dest_path_edit, 1, 0)
+		grid_input.addWidget(self.dest_path_edit, 1, 0)
 		grid_input.addWidget(select_path, 1, 1)
 		group_input.setLayout(grid_input)
 
@@ -113,24 +116,32 @@ class MainWindow(QMainWindow):
 		vbox_main.addWidget(splitter_filelist)
 		vbox_main.setContentsMargins(0,0,0,0)
 
+	def show_about(self):
+		QMessageBox.information( self, 'About', 'Asdf' )
+
 	def set_path(self, path):
 		self.dirmodel.setRootPath(path)
 		self.file_view.setRootIndex(self.filemodel.index(path))
 		
 		self.folder_view.setExpanded(self.filemodel.index(path), True)
-		self.folder_view.expandAll()
 
-	def clickedFolder(self, index):
+	def clicked_folder(self, index):
 		index = self.selectionModel.currentIndex()
 		dir_path = self.dirmodel.filePath(index)
+		self.set_path(dir_path)
 		self.filemodel.setRootPath(dir_path)
 		self.file_view.setRootIndex(self.filemodel.index(dir_path))
 
-	def clickedAdd(self):
-		pass
+	def clicked_add(self):
+		print('pop')
+
+	def select_save_path(self):
+		fname, _ = QFileDialog.getSaveFileName(self, 'Save file', QDir.homePath(), "*.pdf")
+		self.dest_path_edit.setText(fname)
 
 app = QApplication(sys.argv)
 main = MainWindow()
 main.set_path(QDir.homePath())
+main.folder_view.expandAll()
 main.show()
 sys.exit(app.exec_())
