@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
 		self.setWindowTitle('PDF Merger')
 
 		about = QAction('About', self)
-		self.connect(about, SIGNAL('clicked()'), self.show_about)
+		self.connect(about, SIGNAL('triggered()'), self.show_about)
 		exit = QAction('Exit', self)
 		exit.setShortcut('Ctrl+Q')
 		self.connect(exit, SIGNAL('triggered()'), SLOT('close()'))
@@ -117,7 +117,10 @@ class MainWindow(QMainWindow):
 		vbox_main.setContentsMargins(0,0,0,0)
 
 	def show_about(self):
-		QMessageBox.information( self, 'About', 'Asdf' )
+		#TODO add hyperlinks and create simple base website
+		QMessageBox.information( self, 'About', 'PDF Merger\n2013 Nikola Peric\n\n'
+			+ 'http://www.example.com/\nhttps://github.com/nikolap/pdfmerger/\n\n'
+			+ 'Licensed under The MIT License\nhttp://opensource.org/licenses/MIT' )
 
 	def set_path(self, path):
 		self.dirmodel.setRootPath(path)
