@@ -8,7 +8,11 @@ from PySide.QtGui import QMainWindow, QPushButton, QApplication, QLabel, QAction
 from PySide.QtCore import QDir, QModelIndex, Qt, SIGNAL, SLOT
 
 def merge_pdf(destination=None, pdfFiles=None):    
-    # TODO: add in error handling if no destination or pdffiles
+    if destination is None:
+    	pass
+
+    if pdfFiles < 2:
+    	pass
 
     # Add pages to write
     output = PdfFileWriter()
@@ -43,15 +47,18 @@ class MainWindow(QMainWindow):
 		file.addAction(about)
 		file.addAction(exit)
 
-		self.mainWidget = QWidget(self)
-		self.setCentralWidget(self.mainWidget)
+		self.main_widget = QWidget(self)
+		self.setCentralWidget(self.main_widget)
+		self.up_down_widget = QWidget(self)
+		self.options_widget = QWidget(self)
+		
 
-		self.optionsWidget = QWidget(self)
-
-		files_list = QListWidget()
 		input_files_label = QLabel("Input PDFs")
-		add_button = QPushButton("Add file")
+		files_list = QListWidget()
+		add_button = QPushButton("Add PDF(s) to merge...")
 		add_button.clicked.connect(self.clicked_add)
+		up_button = QPushButton("Up")
+		down_button = QPushButton("Down")
 		select_path_label = QLabel("Output PDF")
 		self.dest_path_edit = QLineEdit()
 		select_path = QPushButton("Select...")
@@ -59,60 +66,36 @@ class MainWindow(QMainWindow):
 		start = QPushButton("Start")
 		start.clicked.connect(self.merge_pdf)
 
-		self.fileBrowserWidget = QWidget(self)
-
-		self.dirmodel = QFileSystemModel()
-		self.dirmodel.setFilter(QDir.NoDotAndDotDot | QDir.AllDirs)
-
-		self.folder_view = QTreeView(parent = self)
-		self.folder_view.setModel(self.dirmodel)
-		self.folder_view.clicked[QModelIndex].connect(self.clicked_folder)
-		self.folder_view.setHeaderHidden(True)
-		self.folder_view.hideColumn(1)
-		self.folder_view.hideColumn(2)
-		self.folder_view.hideColumn(3)
-
-		self.selectionModel = self.folder_view.selectionModel()
-
-		pdf_file_filter = ["*.pdf"]
-		self.filemodel = QFileSystemModel()
-		self.filemodel.setFilter(QDir.NoDotAndDotDot | QDir.Files)
-		self.filemodel.setNameFilters(pdf_file_filter)
-
-		self.file_view = QListView(parent = self)
-		self.file_view.setModel(self.filemodel)
+		up_down_vbox = QVBoxLayout(self.up_down_widget)
+		up_down_vbox.addWidget(up_button)
+		up_down_vbox.addWidget(down_button)
+		self.up_down_widget.setLayout(up_down_vbox)
 
 		group_input = QGroupBox()
 		grid_input = QGridLayout()
-
-		splitter_filebrowser = QSplitter()
-		splitter_filebrowser.addWidget(self.folder_view)
-		splitter_filebrowser.addWidget(self.file_view)
-		splitter_filebrowser.setStretchFactor(0,4)
-		splitter_filebrowser.setStretchFactor(1,3)
-		hbox = QHBoxLayout()
-		hbox.addWidget(splitter_filebrowser)
-		hbox.addWidget(add_button)
-		self.fileBrowserWidget.setLayout(hbox)
-
-		grid_input.addWidget(select_path_label, 0, 0)
-		grid_input.addWidget(self.dest_path_edit, 1, 0)
-		grid_input.addWidget(select_path, 1, 1)
+		grid_input.addWidget(add_button, 0, 0)
+		grid_input.addWidget(input_files_label, 1, 0)
+		grid_input.addWidget(files_list, 2, 0)
+		grid_input.addWidget(self.up_down_widget, 2, 1)
 		group_input.setLayout(grid_input)
 
-		vbox_options = QVBoxLayout(self.optionsWidget)
-		vbox_options.addWidget(input_files_label)
-		vbox_options.addWidget(input_files_label)
-		vbox_options.addWidget(files_list)
+		group_output = QGroupBox()
+		grid_output = QGridLayout()
+		grid_output.addWidget(select_path_label, 0, 0)
+		grid_output.addWidget(self.dest_path_edit, 1, 0)
+		grid_output.addWidget(select_path, 1, 1)
+		group_output.setLayout(grid_output)
+
+		vbox_options = QVBoxLayout(self.options_widget)
 		vbox_options.addWidget(group_input)
+		vbox_options.addWidget(group_output)
 		vbox_options.addWidget(start)
-		self.optionsWidget.setLayout(vbox_options)
+		self.options_widget.setLayout(vbox_options)
 
 		splitter_filelist = QSplitter()
 		splitter_filelist.setOrientation(Qt.Vertical)
-		splitter_filelist.addWidget(self.fileBrowserWidget)
-		splitter_filelist.addWidget(self.optionsWidget)
-		vbox_main = QVBoxLayout(self.mainWidget)
+		splitter_filelist.addWidget(self.options_widget)
+		vbox_main = QVBoxLayout(self.main_widget)
 		vbox_main.addWidget(splitter_filelist)
 		vbox_main.setContentsMargins(0,0,0,0)
 
@@ -122,21 +105,8 @@ class MainWindow(QMainWindow):
 			+ 'http://www.example.com/\nhttps://github.com/nikolap/pdfmerger/\n\n'
 			+ 'Licensed under The MIT License\nhttp://opensource.org/licenses/MIT' )
 
-	def set_path(self, path):
-		self.dirmodel.setRootPath(path)
-		self.file_view.setRootIndex(self.filemodel.index(path))
-		
-		self.folder_view.setExpanded(self.filemodel.index(path), True)
-
-	def clicked_folder(self, index):
-		index = self.selectionModel.currentIndex()
-		dir_path = self.dirmodel.filePath(index)
-		self.set_path(dir_path)
-		self.filemodel.setRootPath(dir_path)
-		self.file_view.setRootIndex(self.filemodel.index(dir_path))
-
 	def clicked_add(self):
-		print('pop')
+		fname, _ = QFileDialog.getOpenFileNames(self, 'Select two or more PDFs to merge', QDir.homePath(), "*.pdf")
 
 	def select_save_path(self):
 		fname, _ = QFileDialog.getSaveFileName(self, 'Save file', QDir.homePath(), "*.pdf")
@@ -148,7 +118,5 @@ class MainWindow(QMainWindow):
 
 app = QApplication(sys.argv)
 main = MainWindow()
-main.set_path(QDir.homePath())
-main.folder_view.expandAll()
 main.show()
 sys.exit(app.exec_())
