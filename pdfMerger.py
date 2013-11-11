@@ -106,6 +106,7 @@ class MainWindow(QMainWindow):
 
 	def show_about(self):
 		#TODO add hyperlinks and create simple base website
+		#TODO versioning system
 		QMessageBox.about(self, 'About', 'PDF Merger\n2013 Nikola Peric\n\n'
 			+ 'http://www.example.com/\nhttps://github.com/nikolap/pdfmerger/\n\n'
 			+ 'Licensed under The MIT License\nhttp://opensource.org/licenses/MIT' )
@@ -148,27 +149,27 @@ class MainWindow(QMainWindow):
 
 	def merge_pdf(self):
 		save_path = self.dest_path_edit.text()
-		try:
-			os.path.isfile(save_path)
-			input_files = []
-			
-			for i in range(0, self.files_list.count()):
-				file_path = self.files_list.item(i).text()
-				if '.pdf' not in file_path and '.PDF' not in file_path:
-					QMessageBox.warning(self, 'Warning!', 'Some files not PDFs\n'
-					+ 'Please examine' + file_path)
-					raise Exception("PDF file error!")
-				else:
-					input_files.append(file_path)
+		if save_path is '':
+			raise Exception(QMessageBox.warning(self, 'Warning!', 'No location to save file selected.\n'
+				+ 'Cannot proceed with merger.'))
 
-			if len(input_files) >= 2:
-				merge_pdf(destination=save_path, pdf_files=input_files)
+		input_files = []
+
+		for i in range(0, self.files_list.count()):
+			file_path = self.files_list.item(i).text()
+			if '.pdf' not in file_path and '.PDF' not in file_path:
+				QMessageBox.warning(self, 'Warning!', 'Some files not PDFs\n'
+				+ 'Please examine' + file_path)
+				raise Exception("PDF file error!")
 			else:
-				QMessageBox.warning(self, 'Warning!', 'Not enough PDFs selected.\n'
-					+ 'Please choose 2 or more files to merge.')
-		except:
-			QMessageBox.warning(self, 'Warning!', 'No location to save file selected.\n'
-				+ 'Cannot proceed with merger.' )
+				input_files.append(file_path)
+
+		if len(input_files) >= 2:
+			merge_pdf(destination=save_path, pdf_files=input_files)
+		else:
+			QMessageBox.warning(self, 'Warning!', 'Not enough PDFs selected.\n'
+				+ 'Please choose 2 or more files to merge.')
+		
 
 app = QApplication(sys.argv)
 main = MainWindow()
