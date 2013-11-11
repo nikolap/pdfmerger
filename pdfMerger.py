@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
 		self.options_widget = QWidget(self)
 		
 
-		input_files_label = QLabel("Input PDFs.\nThis is the order in which the files will be merged too")
+		input_files_label = QLabel("Input PDFs\nThis is the order in which the files will be merged too")
 		self.files_list = QListWidget()
 		self.files_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
 		add_button = QPushButton("Add PDF(s) to merge...")
@@ -64,6 +64,7 @@ class MainWindow(QMainWindow):
 		remove_button.clicked.connect(self.remove_file)
 		select_path_label = QLabel("Output PDF")
 		self.dest_path_edit = QLineEdit()
+		self.dest_path_edit.setReadOnly(True)
 		select_path = QPushButton("Select...")
 		select_path.clicked.connect(self.select_save_path)
 		start = QPushButton("Start")
@@ -110,7 +111,8 @@ class MainWindow(QMainWindow):
 			+ 'Licensed under The MIT License\nhttp://opensource.org/licenses/MIT' )
 
 	def clicked_add(self):
-		fname, _ = QFileDialog.getOpenFileNames(self, 'Select two or more PDFs to merge', QDir.homePath(), "*.pdf")
+		fname, _ = QFileDialog.getOpenFileNames(self, 'Select two or more PDFs to merge', 
+			QDir.homePath(), "*.pdf")
 		self.files_list.addItems(fname)
 
 	def move_file_up(self):
@@ -145,11 +147,28 @@ class MainWindow(QMainWindow):
 		self.dest_path_edit.setText(fname)
 
 	def merge_pdf(self):
-		# TODO error checking
-		input_files = []
-		for i in range(0, self.files_list.count()):
-			input_files.append(self.files_list.item(i).text())
-		merge_pdf(destination=self.dest_path_edit.text(), pdf_files=input_files)
+		save_path = self.dest_path_edit.text()
+		try:
+			os.path.isfile(save_path)
+			input_files = []
+			
+			for i in range(0, self.files_list.count()):
+				file_path = self.files_list.item(i).text()
+				if '.pdf' not in file_path and '.PDF' not in file_path:
+					QMessageBox.warning(self, 'Warning!', 'Some files not PDFs\n'
+					+ 'Please examine' + file_path)
+					raise Exception("PDF file error!")
+				else:
+					input_files.append(file_path)
+
+			if len(input_files) >= 2:
+				merge_pdf(destination=save_path, pdf_files=input_files)
+			else:
+				QMessageBox.warning(self, 'Warning!', 'Not enough PDFs selected.\n'
+					+ 'Please choose 2 or more files to merge.')
+		except:
+			QMessageBox.warning(self, 'Warning!', 'No location to save file selected.\n'
+				+ 'Cannot proceed with merger.' )
 
 app = QApplication(sys.argv)
 main = MainWindow()
