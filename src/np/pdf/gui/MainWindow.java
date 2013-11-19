@@ -27,10 +27,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 public class MainWindow extends Application {
 	private ListView<File> fileList = new ListView<File>();
@@ -44,6 +44,8 @@ public class MainWindow extends Application {
 		this.stage = stage;
 		this.stage.setTitle("PDF Merger");
 		Scene scene = new Scene(new VBox(), 800, 600);
+		scene.setFill(Color.BEIGE);
+		scene.getRoot().setStyle("-fx-font-size: 14;");
 		
 		MenuBar menuBar = new MenuBar();
 		Menu menuFile = new Menu("File");
@@ -304,6 +306,6 @@ public class MainWindow extends Application {
 	}
 	private void showErrorDialog(){
 		Dialogs.showErrorDialog(stage, "Something went wrong...", "Oops, an error happened!",
-			    "Error"); //TODO: exception
+			    "Error"); //TODO: exception included in info
 	}
 }
