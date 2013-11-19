@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -60,18 +61,27 @@ public class MainWindow extends Application {
 				System.exit(0);
 			}
 		});
-		
+		//TODO: sizing		
 		Button addPDFButton = new Button("Add PDFs to merge...");
-		Button upButton = new Button("Up");
-		Button downButton = new Button("Down");
+		Button upButton = new Button("Move Up");
+		Button downButton = new Button("Move Down");
 		Button removePDFButton = new Button("Remove PDF");
 		Button selectSaveButton = new Button("Select...");
 		Button startButton = new Button("Start!");
 		Text inputLabel = new Text("Input PDFs\nThis is the order in which the files will be merged.");
 		Text outputLabel = new Text("Output PDF");
 		
+		addPDFButton.setMaxWidth(Double.MAX_VALUE);
+		upButton.setMaxWidth(Double.MAX_VALUE);
+		downButton.setMaxWidth(Double.MAX_VALUE);
+		removePDFButton.setMaxWidth(Double.MAX_VALUE);
+		selectSaveButton.setMaxWidth(Double.MAX_VALUE);
+		startButton.setMaxWidth(Double.MAX_VALUE);
+		
+		fileList.setMinWidth(650);
 		fileList.setItems(pdfFiles);
 		fileList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		outputPDFField.setMinWidth(650);
 		outputPDFField.setDisable(true);
 
 		addPDFButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -105,9 +115,8 @@ public class MainWindow extends Application {
 			}
 		});
 		
-		//TODO: sizing
-		
 		GridPane inputPane = new GridPane();
+		inputPane.setAlignment(Pos.CENTER);
 		inputPane.setHgap(12);
 		inputPane.setVgap(12);
 		inputPane.setPadding(new Insets(12));
@@ -129,6 +138,7 @@ public class MainWindow extends Application {
 		outputVBox.getChildren().addAll(outputLabel, outputHBox, new Separator(), startButton);
 		
 		VBox root = new VBox();
+		root.setAlignment(Pos.CENTER);
 		root.setPadding(new Insets(12));
 		root.setSpacing(8);
 		root.getChildren().addAll(inputPane, new Separator(), outputVBox);
