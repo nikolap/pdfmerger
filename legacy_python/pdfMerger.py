@@ -2,27 +2,33 @@
 import sys
 import re
 import traceback
-
-from PyPDF2 import PdfFileWriter, PdfFileReader
+from io import FileIO as file
+from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
 from PySide.QtGui import QMainWindow, QPushButton, QApplication, QLabel, QAction, QWidget, QListWidget, QLineEdit, QFileSystemModel, QTreeView, QListView, QGroupBox, QGridLayout, QSplitter, QHBoxLayout, QVBoxLayout, QDesktopServices, QMessageBox, QFileDialog, QAbstractItemView
 from PySide.QtCore import QDir, QModelIndex, Qt, SIGNAL, SLOT
 
 def merge_pdf(destination=None, pdf_files=None):
-	# TODO fix merging function causing error for some larger PDF files
 	try:
-		# Add pages to write
 		output = PdfFileWriter()
+		inputs = []
+		for pdf_file in pdf_files:
+			reader_pdf_file = PdfFileReader(open(pdf_file, 'rb'))
+			inputs.append(reader_pdf_file)
+
+		for input_pdf in inputs:
+			for page in input_pdf.pages:
+				output.addPage(page)
+
 		output_stream = open(destination, 'wb')
-		for f in pdf_files:    
-			input_file = PdfFileReader(open(f, "rb"))
-			pages = input_file.getNumPages()
-
-		for pages in range(pages):
-			output.addPage(input_file.getPage(pages))
-
-		# Write output
 		output.write(output_stream)
-		output_stream.close()
+		output_stream.close
+
+		# merger = PdfFileMerger()
+		# for pdf_file in pdf_files:
+		# 	merger.append(open(pdf_file, 'rb'))
+		
+		# merger.write(open(destination), 'wb')
+
 		QMessageBox.information(main, 'Success!', 'PDFs have been merged to ' + destination )
 	except:
 		QMessageBox.critical(main, 'Error!', 'Critical error occured.\n\n%s' % traceback.format_exc())

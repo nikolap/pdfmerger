@@ -2,10 +2,12 @@
 
 PDFMerger has one function only - to merge several PDF files into one. Simplicity is key.
 
+Originally was built as a Python app, but due to the limitations of Python PDF libraries (in Python 3+ at least), it was converted to Java.
+
 ## Dependencies
 
-* [PyPDF2](https://github.com/mstamy2/PyPDF2)
-* [PySide (requires Qt)](http://qt-project.org/wiki/PySide)
+* [PDFBox](https://pdfbox.apache.org/)
+* [JavaFX](http://www.oracle.com/technetwork/java/javafx/overview/index.html)
 
 ## License
 
