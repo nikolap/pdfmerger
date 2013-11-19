@@ -34,10 +34,12 @@ public class MainWindow extends Application {
 	private final ObservableList<File> pdfFiles = FXCollections.observableArrayList();
 	private TextField outputPDFField = new TextField();
 	private File outputPDFFile;
+	private Stage stage;
 	
 	@Override
 	public void start(final Stage stage) {
-		stage.setTitle("PDF Merger");
+		this.stage = stage;
+		this.stage.setTitle("PDF Merger");
 		Scene scene = new Scene(new VBox(), 800, 600);
 		
 		MenuBar menuBar = new MenuBar();
@@ -74,32 +76,32 @@ public class MainWindow extends Application {
 
 		addPDFButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				addPDFsDialog(stage);
+				addPDFsDialog();
 			}
 		});
 		upButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				upAction(stage);
+				upAction();
 			}
 		});
 		downButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				downAction(stage);
+				downAction();
 			}
 		});
 		removePDFButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				removeAction(stage);
+				removeAction();
 			}
 		});
 		selectSaveButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				savePDFDialog(stage);
+				savePDFDialog();
 			}
 		});
 		startButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				startAction(stage);
+				startAction();
 			}
 		});
 		
@@ -133,8 +135,8 @@ public class MainWindow extends Application {
 		
 		((VBox) scene.getRoot()).getChildren().addAll(menuBar,
 				inputPane, new Separator(), outputVBox);
-        stage.setScene(scene);
-        stage.show();
+		this.stage.setScene(scene);
+		this.stage.show();
 	}
 	
 	private void aboutDialog(){
@@ -151,6 +153,7 @@ public class MainWindow extends Application {
 		final Hyperlink homepage = new Hyperlink("http://www.example.com");
 		final Hyperlink github = new Hyperlink("https://github.com/nikolap/pdfmerger");
 		final Hyperlink license = new Hyperlink("http://opensource.org/license/MIT");
+		Button closeAbout = new Button("Close");
 		
 		homepage.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent e) {
@@ -185,8 +188,13 @@ public class MainWindow extends Application {
 				}
 		    }
 		});
+		closeAbout.setOnAction(new EventHandler<ActionEvent>() {
+		    public void handle(ActionEvent e) {
+		        about.close();
+		    }
+		});
 		
-		((VBox) scene.getRoot()).getChildren().addAll(aboutLabel, homepage, github, licenseLabel, license);
+		((VBox) scene.getRoot()).getChildren().addAll(aboutLabel, homepage, github, licenseLabel, license, closeAbout);
 		about.setScene(scene);
 		about.show();
 	}
@@ -195,7 +203,7 @@ public class MainWindow extends Application {
 		java.awt.Desktop.getDesktop().browse(new URI(url));
 	}
 	
-	private void addPDFsDialog(Stage stage){
+	private void addPDFsDialog(){
 		FileChooser openFileChooser = new FileChooser();
 		FileChooser.ExtensionFilter openExtension = new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf");
 		openFileChooser.getExtensionFilters().add(openExtension);
@@ -214,7 +222,7 @@ public class MainWindow extends Application {
 		pdfFiles.add(pdf);
 	}
 	
-	private void upAction(Stage stage){
+	private void upAction(){
 		ObservableList<Integer> selectedPDFs = fileList.getSelectionModel().getSelectedIndices();
 		if (selectedPDFs.indexOf(0) == -1){
 			for (int selectedPDF : selectedPDFs){
@@ -226,7 +234,7 @@ public class MainWindow extends Application {
 		}
 	}
 	
-	private void downAction(Stage stage){
+	private void downAction(){
 		ObservableList<Integer> selectedPDFs = fileList.getSelectionModel().getSelectedIndices();
 		if (selectedPDFs.indexOf(pdfFiles.size() - 1) == -1){
 			for (int selectedPDF : selectedPDFs){
@@ -238,7 +246,7 @@ public class MainWindow extends Application {
 		}
 	}
 
-	private void removeAction(Stage stage){
+	private void removeAction(){
 		ObservableList<File> selectedPDFs = fileList.getSelectionModel().getSelectedItems();
 		int itemCount = selectedPDFs.size();
 
@@ -248,7 +256,7 @@ public class MainWindow extends Application {
 		}
 	}
 	
-	private void savePDFDialog(Stage stage){
+	private void savePDFDialog(){
 		FileChooser saveFileChooser = new FileChooser();
 		FileChooser.ExtensionFilter saveExtension = new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf");
 		saveFileChooser.getExtensionFilters().add(saveExtension);
@@ -274,7 +282,7 @@ public class MainWindow extends Application {
         }
 	}
 	
-	private void startAction(Stage stage){
+	private void startAction(){
 		//TODO: check if all data set (i.e. 2+ inputs, 1 output)
 		PDFMerger merger = new PDFMerger(pdfFiles, outputPDFFile);
 		merger.run();
