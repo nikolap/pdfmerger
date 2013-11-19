@@ -14,6 +14,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialogs;
+import javafx.scene.control.Dialogs.DialogOptions;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
@@ -150,26 +152,17 @@ public class MainWindow extends Application {
 	}
 	
 	private void aboutDialog(){
-		final Stage about = new Stage();
-		about.setTitle("About PDFMerger");
-		about.initStyle(StageStyle.UTILITY);
-		
-		//TODO: make pretty
-		
-		Scene scene = new Scene(new VBox(), 256, 256);
 		
 		Text aboutLabel = new Text("PDF Merger\n2013 Nikola Peric");
 		Text licenseLabel = new Text("Licensed under The MIT License");
 		final Hyperlink homepage = new Hyperlink("http://www.example.com");
 		final Hyperlink github = new Hyperlink("https://github.com/nikolap/pdfmerger");
 		final Hyperlink license = new Hyperlink("http://opensource.org/license/MIT");
-		Button closeAbout = new Button("Close");
 		
 		homepage.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent e) {
 		    	try {
 					openUrl(homepage.getText());
-					about.close();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -180,7 +173,6 @@ public class MainWindow extends Application {
 		    public void handle(ActionEvent e) {
 		    	try {
 					openUrl(github.getText());
-					about.close();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -191,22 +183,16 @@ public class MainWindow extends Application {
 		    public void handle(ActionEvent e) {
 		        try {
 					openUrl(license.getText());
-					about.close();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 		    }
 		});
-		closeAbout.setOnAction(new EventHandler<ActionEvent>() {
-		    public void handle(ActionEvent e) {
-		        about.close();
-		    }
-		});
 		
-		((VBox) scene.getRoot()).getChildren().addAll(aboutLabel, homepage, github, licenseLabel, license, closeAbout);
-		about.setScene(scene);
-		about.show();
+		VBox aboutBox = new VBox();
+		aboutBox.getChildren().addAll(aboutLabel, homepage, github, licenseLabel, license);
+		Dialogs.showCustomDialog(stage, aboutBox, "Please log in", "Login", DialogOptions.OK, null);
 	}
 	
 	private void openUrl(String url) throws Exception {
@@ -293,9 +279,31 @@ public class MainWindow extends Application {
 	}
 	
 	private void startAction(){
-		//TODO: check if all data set (i.e. 2+ inputs, 1 output)
+		if (pdfFiles.size() < 2) {
+			showWarningDialog("You need a minimum of two (2) PDF files to merge!");
+		}
+		else if (outputPDFFile == null) {
+			showWarningDialog("You need a destination for your merged PDF!");
+		}
+		else {
 		PDFMerger merger = new PDFMerger(pdfFiles, outputPDFFile);
-		merger.run();
-		//TODO: dialog if success based off run boolean
+		if (merger.run())
+			showSuccessDialog(outputPDFFile);
+		else
+			showErrorDialog();
+		}
+	}
+	
+	private void showWarningDialog(String text){
+		Dialogs.showWarningDialog(stage, text, "Missing information!", "Warning");
+	}
+	
+	private void showSuccessDialog(File destination){
+		Dialogs.showInformationDialog(stage, "Your PDFs have successfully been merged to the file " + destination.getName(),
+			    "Merger complete!", "Success");
+	}
+	private void showErrorDialog(){
+		Dialogs.showErrorDialog(stage, "Something went wrong...", "Oops, an error happened!",
+			    "Error"); //TODO: exception
 	}
 }
