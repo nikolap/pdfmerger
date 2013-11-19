@@ -6,9 +6,13 @@ import np.pdf.gui.MainWindow;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+/**
+ * @author Nikola Peric
+ *
+ */
 public class Main extends Application{
 	/**
-	 * Launches the PDFMerger program
+	 * Launches the PDFMerger program.
 	 * @param args
 	 */
 	public static void main(String[] args) throws IOException {

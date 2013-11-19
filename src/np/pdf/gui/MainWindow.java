@@ -32,9 +32,14 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/**
+ * @author Nikola Peric
+ *
+ */
 public class MainWindow extends Application {
 	private ListView<File> fileList = new ListView<File>();
-	private final ObservableList<File> pdfFiles = FXCollections.observableArrayList();
+	private final ObservableList<File> pdfFiles = 
+			FXCollections.observableArrayList();
 	private TextField outputPDFField = new TextField();
 	private File outputPDFFile;
 	private Stage stage;
@@ -72,7 +77,8 @@ public class MainWindow extends Application {
 		Button removePDFButton = new Button("Remove PDF");
 		Button selectSaveButton = new Button("Select...");
 		Button startButton = new Button("Start!");
-		Text inputLabel = new Text("Input PDFs\nThis is the order in which the files will be merged.");
+		Text inputLabel = new Text("Input PDFs\nThis is the order in which "
+				+ "the files will be merged.");
 		Text outputLabel = new Text("Output PDF");
 		
 		addPDFButton.setMaxWidth(Double.MAX_VALUE);
@@ -139,7 +145,8 @@ public class MainWindow extends Application {
 		VBox outputVBox = new VBox();
 		outputVBox.setPadding(new Insets(12));
 		outputVBox.setSpacing(8);
-		outputVBox.getChildren().addAll(outputLabel, outputHBox, new Separator(), startButton);
+		outputVBox.getChildren().addAll(outputLabel, outputHBox, 
+				new Separator(), startButton);
 		
 		VBox root = new VBox();
 		root.setAlignment(Pos.CENTER);
@@ -154,12 +161,13 @@ public class MainWindow extends Application {
 	}
 	
 	private void aboutDialog(){
-		
 		Text aboutLabel = new Text("PDF Merger\n2013 Nikola Peric");
 		Text licenseLabel = new Text("Licensed under The MIT License");
 		final Hyperlink homepage = new Hyperlink("http://www.example.com");
-		final Hyperlink github = new Hyperlink("https://github.com/nikolap/pdfmerger");
-		final Hyperlink license = new Hyperlink("http://opensource.org/license/MIT");
+		final Hyperlink github = new Hyperlink(
+				"https://github.com/nikolap/pdfmerger");
+		final Hyperlink license = new Hyperlink(
+				"http://opensource.org/license/MIT");
 		
 		homepage.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent e) {
@@ -193,35 +201,44 @@ public class MainWindow extends Application {
 		});
 		
 		VBox aboutBox = new VBox();
-		aboutBox.getChildren().addAll(aboutLabel, homepage, github, licenseLabel, license);
-		Dialogs.showCustomDialog(stage, aboutBox, "Please log in", "Login", DialogOptions.OK, null);
+		aboutBox.getChildren().addAll(aboutLabel, homepage, github,
+				licenseLabel, license);
+		Dialogs.showCustomDialog(stage, aboutBox, "Please log in", "Login",
+				DialogOptions.OK, null);
 	}
 	
+	/**
+	 * Opens a URL in a browser application
+	 * @param URL for webpage to visit
+	 * @throws Exception if unable to open browser
+	 */
 	private void openUrl(String url) throws Exception {
 		java.awt.Desktop.getDesktop().browse(new URI(url));
 	}
 	
+	/**
+	 * Adds PDFs to the listview based off of a file chooser selection
+	 */
 	private void addPDFsDialog(){
 		FileChooser openFileChooser = new FileChooser();
-		FileChooser.ExtensionFilter openExtension = new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf");
+		FileChooser.ExtensionFilter openExtension = 
+				new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf");
 		openFileChooser.getExtensionFilters().add(openExtension);
 		openFileChooser.setTitle("Add PDFs to merge...");
-		openFileChooser.setInitialDirectory(new File(System.getProperty("user.home"))); 
+		openFileChooser.setInitialDirectory(
+				new File(System.getProperty("user.home"))); 
 		
 		List<File> list = openFileChooser.showOpenMultipleDialog(stage);
 		if (list != null) {
             for (File file : list) {
-                addPDFs(file);
+            	pdfFiles.add(file);
             }
         }
 	}
-	
-	private void addPDFs(File pdf){
-		pdfFiles.add(pdf);
-	}
-	
+
 	private void upAction(){
-		ObservableList<Integer> selectedPDFs = fileList.getSelectionModel().getSelectedIndices();
+		ObservableList<Integer> selectedPDFs = 
+				fileList.getSelectionModel().getSelectedIndices();
 		if (selectedPDFs.indexOf(0) == -1){
 			for (int selectedPDF : selectedPDFs){
 				File pdfFileUp = pdfFiles.get(selectedPDF);
@@ -233,7 +250,8 @@ public class MainWindow extends Application {
 	}
 	
 	private void downAction(){
-		ObservableList<Integer> selectedPDFs = fileList.getSelectionModel().getSelectedIndices();
+		ObservableList<Integer> selectedPDFs = 
+				fileList.getSelectionModel().getSelectedIndices();
 		if (selectedPDFs.indexOf(pdfFiles.size() - 1) == -1){
 			for (int selectedPDF : selectedPDFs){
 				File pdfFileUp = pdfFiles.get(selectedPDF + 1);
@@ -245,7 +263,8 @@ public class MainWindow extends Application {
 	}
 
 	private void removeAction(){
-		ObservableList<File> selectedPDFs = fileList.getSelectionModel().getSelectedItems();
+		ObservableList<File> selectedPDFs = 
+				fileList.getSelectionModel().getSelectedItems();
 		int itemCount = selectedPDFs.size();
 
 		for (int i = itemCount - 1; i > -1; i--){
@@ -254,12 +273,17 @@ public class MainWindow extends Application {
 		}
 	}
 	
+	/**
+	 * Selects the save location for the merged PDF file
+	 */
 	private void savePDFDialog(){
 		FileChooser saveFileChooser = new FileChooser();
-		FileChooser.ExtensionFilter saveExtension = new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf");
+		FileChooser.ExtensionFilter saveExtension = 
+				new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf");
 		saveFileChooser.getExtensionFilters().add(saveExtension);
 		saveFileChooser.setTitle("Merged PDF save location");
-		saveFileChooser.setInitialDirectory(new File(System.getProperty("user.home"))); 
+		saveFileChooser.setInitialDirectory(
+				new File(System.getProperty("user.home"))); 
 
         File file = saveFileChooser.showSaveDialog(stage);
         
@@ -269,7 +293,8 @@ public class MainWindow extends Application {
         	int offset = path.length() - extension.length();
         	
         	// case insensitive check for .pdf extension in file name
-        	if (path.regionMatches(true, offset, extension, 0, extension.length())){
+        	if (path.regionMatches(true, offset, extension, 0, 
+        			extension.length())){
         		outputPDFField.setText(file.getAbsolutePath());
         		outputPDFFile = file;
         	}
@@ -280,9 +305,13 @@ public class MainWindow extends Application {
         }
 	}
 	
+	/**
+	 * Launches the PDFMerger and indicates whether merger was success or not
+	 */
 	private void startAction(){
 		if (pdfFiles.size() < 2) {
-			showWarningDialog("You need a minimum of two (2) PDF files to merge!");
+			showWarningDialog("You need a minimum of two (2) "
+					+ "PDF files to merge!");
 		}
 		else if (outputPDFFile == null) {
 			showWarningDialog("You need a destination for your merged PDF!");
@@ -297,15 +326,18 @@ public class MainWindow extends Application {
 	}
 	
 	private void showWarningDialog(String text){
-		Dialogs.showWarningDialog(stage, text, "Missing information!", "Warning");
+		Dialogs.showWarningDialog(stage, text, 
+				"Missing information!", "Warning");
 	}
 	
 	private void showSuccessDialog(File destination){
-		Dialogs.showInformationDialog(stage, "Your PDFs have successfully been merged to the file " + destination.getName(),
+		Dialogs.showInformationDialog(stage, "Your PDFs have successfully "
+				+ "been merged to the file " + destination.getName(),
 			    "Merger complete!", "Success");
 	}
 	private void showErrorDialog(){
-		Dialogs.showErrorDialog(stage, "Something went wrong...", "Oops, an error happened!",
-			    "Error"); //TODO: exception included in info
+		Dialogs.showErrorDialog(stage, "Something went wrong...", 
+				"Oops, an error happened!", "Error"); 
+		//TODO: exception included in info
 	}
 }
