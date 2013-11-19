@@ -6,6 +6,7 @@ Originally was built as a Python app, but due to the limitations of Python PDF l
 
 ## Dependencies
 
+* [Java](https://www.java.com/en/)
 * [PDFBox](https://pdfbox.apache.org/)
 * [JavaFX](http://www.oracle.com/technetwork/java/javafx/overview/index.html)
 
