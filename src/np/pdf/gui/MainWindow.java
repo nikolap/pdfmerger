@@ -11,7 +11,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -240,9 +239,13 @@ public class MainWindow extends Application {
 	}
 
 	private void removeAction(Stage stage){
-		//TODO: fix selection bug
 		ObservableList<File> selectedPDFs = fileList.getSelectionModel().getSelectedItems();
-		pdfFiles.removeAll(selectedPDFs);
+		int itemCount = selectedPDFs.size();
+
+		for (int i = itemCount - 1; i > -1; i--){
+			File selectedPDF = selectedPDFs.get(i);
+			pdfFiles.remove(pdfFiles.indexOf(selectedPDF));
+		}
 	}
 	
 	private void savePDFDialog(Stage stage){
@@ -258,6 +261,7 @@ public class MainWindow extends Application {
         	String path = file.getAbsolutePath();
         	String extension = ".pdf";
         	int offset = path.length() - extension.length();
+        	
         	// case insensitive check for .pdf extension in file name
         	if (path.regionMatches(true, offset, extension, 0, extension.length())){
         		outputPDFField.setText(file.getAbsolutePath());
