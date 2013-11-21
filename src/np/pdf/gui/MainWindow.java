@@ -50,7 +50,7 @@ public class MainWindow extends Application {
 		this.stage.setTitle("PDF Merger");
 		Scene scene = new Scene(new VBox(), 800, 600);
 		scene.setFill(Color.BEIGE);
-		scene.getRoot().setStyle("-fx-font-size: 14;");
+		scene.getStylesheets().add("style.css");
 		
 		MenuBar menuBar = new MenuBar();
 		Menu menuFile = new Menu("File");
@@ -70,13 +70,13 @@ public class MainWindow extends Application {
 				System.exit(0);
 			}
 		});
-		//TODO: sizing		
 		Button addPDFButton = new Button("Add PDFs to merge...");
 		Button upButton = new Button("Move Up");
 		Button downButton = new Button("Move Down");
 		Button removePDFButton = new Button("Remove PDF");
 		Button selectSaveButton = new Button("Select...");
 		Button startButton = new Button("Start!");
+		Button donate = new Button("Donate! Help support this program.");
 		Text inputLabel = new Text("Input PDFs\nThis is the order in which "
 				+ "the files will be merged.");
 		Text outputLabel = new Text("Output PDF");
@@ -87,6 +87,8 @@ public class MainWindow extends Application {
 		removePDFButton.setMaxWidth(Double.MAX_VALUE);
 		selectSaveButton.setMaxWidth(Double.MAX_VALUE);
 		startButton.setMaxWidth(Double.MAX_VALUE);
+		donate.setMaxWidth(Double.MAX_VALUE);
+		donate.setId("donate");
 		
 		fileList.setMinWidth(650);
 		fileList.setItems(pdfFiles);
@@ -124,6 +126,16 @@ public class MainWindow extends Application {
 				startAction();
 			}
 		});
+		donate.setOnAction(new EventHandler<ActionEvent>() {
+		    public void handle(ActionEvent e) {
+		    	try {
+					openUrl("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GMY8TP982WGFL");
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+		    }
+		});
 		
 		GridPane inputPane = new GridPane();
 		inputPane.setAlignment(Pos.CENTER);
@@ -146,7 +158,7 @@ public class MainWindow extends Application {
 		outputVBox.setPadding(new Insets(12));
 		outputVBox.setSpacing(8);
 		outputVBox.getChildren().addAll(outputLabel, outputHBox, 
-				new Separator(), startButton);
+				new Separator(), startButton, donate);
 		
 		VBox root = new VBox();
 		root.setAlignment(Pos.CENTER);
@@ -161,9 +173,9 @@ public class MainWindow extends Application {
 	}
 	
 	private void aboutDialog(){
-		Text aboutLabel = new Text("PDF Merger\n2013 Nikola Peric");
+		Text aboutLabel = new Text("PDF Merger version 1.0\n2013 Nikola Peric");
 		Text licenseLabel = new Text("Licensed under The MIT License");
-		final Hyperlink homepage = new Hyperlink("http://www.example.com");
+		final Hyperlink homepage = new Hyperlink("http://www.pdfmerging.com");
 		final Hyperlink github = new Hyperlink(
 				"https://github.com/nikolap/pdfmerger");
 		final Hyperlink license = new Hyperlink(

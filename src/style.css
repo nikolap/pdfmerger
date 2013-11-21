@@ -1,0 +1,9 @@
+.root {
+	-fx-font-size: 14;
+}
+#donate {
+	-fx-color: #e9a041;
+}
+#donate:hover {
+	-fx-color: #a3681b;
+}

@@ -2,6 +2,8 @@
 
 PDFMerger has one function only - to merge several PDF files into one. Simplicity is key.
 
+Website can be found [here](pdfmerging.com). A binary or jar are available there.
+
 Originally was built as a Python app, but due to the limitations of Python PDF libraries (in Python 3+ at least), it was converted to Java.
 
 ## Dependencies
