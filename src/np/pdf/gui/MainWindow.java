@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -81,13 +82,13 @@ public class MainWindow extends Application {
 				+ "the files will be merged.");
 		Text outputLabel = new Text("Output PDF");
 		
-		addPDFButton.setMaxWidth(Double.MAX_VALUE);
+		addPDFButton.setMaxWidth(400);
 		upButton.setMaxWidth(Double.MAX_VALUE);
 		downButton.setMaxWidth(Double.MAX_VALUE);
 		removePDFButton.setMaxWidth(Double.MAX_VALUE);
 		selectSaveButton.setMaxWidth(Double.MAX_VALUE);
-		startButton.setMaxWidth(Double.MAX_VALUE);
-		donate.setMaxWidth(Double.MAX_VALUE);
+		startButton.setMaxWidth(400);
+		donate.setMaxWidth(400);
 		donate.setId("donate");
 		
 		fileList.setMinWidth(650);
@@ -129,7 +130,8 @@ public class MainWindow extends Application {
 		donate.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent e) {
 		    	try {
-					openUrl("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GMY8TP982WGFL");
+					openUrl("https://www.paypal.com/cgi-bin/webscr?"
+							+ "cmd=_s-xclick&hosted_button_id=GMY8TP982WGFL");
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -149,6 +151,8 @@ public class MainWindow extends Application {
 		inputPane.add(downButton, 1, 3);
 		inputPane.add(removePDFButton, 1, 4);
 		
+		GridPane.setHalignment(addPDFButton, HPos.CENTER);
+		
 		HBox outputHBox = new HBox();
 		outputHBox.setPadding(new Insets(12));
 		outputHBox.setSpacing(10);
@@ -157,17 +161,17 @@ public class MainWindow extends Application {
 		VBox outputVBox = new VBox();
 		outputVBox.setPadding(new Insets(12));
 		outputVBox.setSpacing(8);
-		outputVBox.getChildren().addAll(outputLabel, outputHBox, 
-				new Separator(), startButton, donate);
+		outputVBox.getChildren().addAll(outputLabel, outputHBox);
 		
-		VBox root = new VBox();
-		root.setAlignment(Pos.CENTER);
-		root.setPadding(new Insets(12));
-		root.setSpacing(8);
-		root.getChildren().addAll(inputPane, new Separator(), outputVBox);
+		VBox bottomBox = new VBox();
+		bottomBox.setAlignment(Pos.CENTER);
+		bottomBox.setPadding(new Insets(12));
+		bottomBox.setSpacing(8);
+		bottomBox.getChildren().addAll(startButton, donate);
 		
 		((VBox) scene.getRoot()).getChildren().addAll(menuBar,
-				inputPane, new Separator(), outputVBox);
+				inputPane, new Separator(), outputVBox,
+				new Separator(), bottomBox);
 		this.stage.setScene(scene);
 		this.stage.show();
 	}
